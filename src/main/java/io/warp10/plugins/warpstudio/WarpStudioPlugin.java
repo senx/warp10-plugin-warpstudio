@@ -14,7 +14,7 @@
 //   limitations under the License.
 //
 
-package io.warp10.plugins.quantum;
+package io.warp10.plugins.warpstudio;
 
 import io.warp10.warp.sdk.AbstractWarp10Plugin;
 
@@ -24,11 +24,11 @@ import java.util.Properties;
 /**
  * The type Quantum plugin.
  */
-public class QuantumPlugin extends AbstractWarp10Plugin implements Runnable {
+public class WarpStudioPlugin extends AbstractWarp10Plugin implements Runnable {
 
-  private static final String QUANTUM_MAIN_CLASS = "io.warp10.quantum.Main";
-  private static final String CONF_QUANTUM_HOST = "quantum.host";
-  private static final String CONF_QUANTUM_PORT = "quantum.port";
+  private static final String WARPSTUDIO_MAIN_CLASS = "io.warp10.warpstudio.Main";
+  private static final String CONF_WARPSTUDIO_HOST = "warpstudio.host";
+  private static final String CONF_WARPSTUDIO_PORT = "warpstudio.port";
 
   private Properties properties = null;
 
@@ -39,14 +39,14 @@ public class QuantumPlugin extends AbstractWarp10Plugin implements Runnable {
    */
   @Override
   public void init(Properties properties) {
-    String host = properties.getProperty(CONF_QUANTUM_HOST);
-    String port = properties.getProperty(CONF_QUANTUM_PORT);
+    String host = properties.getProperty(CONF_WARPSTUDIO_HOST);
+    String port = properties.getProperty(CONF_WARPSTUDIO_PORT);
 
     this.properties = properties;
 
     Thread t = new Thread(this);
     t.setDaemon(true);
-    t.setName("[QuantumPlugin " + host + ":" + port + "]");
+    t.setName("[WarpStudioPlugin " + host + ":" + port + "]");
     t.start();
   }
 
@@ -57,7 +57,7 @@ public class QuantumPlugin extends AbstractWarp10Plugin implements Runnable {
   public void run() {
 
     try {
-      Class<?> cls = this.getClass().getClassLoader().loadClass(QUANTUM_MAIN_CLASS);
+      Class<?> cls = this.getClass().getClassLoader().loadClass(WARPSTUDIO_MAIN_CLASS);
       Object main = cls.newInstance();
       Method meth = cls.getMethod("init", Properties.class);
       meth.invoke(main, this.properties);

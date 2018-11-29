@@ -33,7 +33,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 this.notifyBuild('STARTED', version)
-                git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-quantum-plugin.git'
+                git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-warpstudio-plugin.git'
                 echo "Building ${version}"
             }
         }

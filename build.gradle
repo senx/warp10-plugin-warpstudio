@@ -70,8 +70,8 @@ configurations {
 }
 
 dependencies {
-    provided group:'io.warp10', name: 'warpscript', version: '1.2.26'
-    compile group:'io.warp10', name: 'warp10-quantum-server', version: warpStudioVersion
+    provided group:'io.warp10', name: 'warpscript', version: '2.0.1'
+    compile group:'io.warp10', name: 'warp10-warpstudio-server', version: warpStudioVersion
 }
 
 sourceSets {
@@ -90,18 +90,18 @@ idea {
 shadowJar {
     manifest {
         attributes(
-                'Main-Class': 'io.warp10.quantum.Main'
+                'Main-Class': 'io.warp10.warpstudio.Main'
         )
     }
-    relocate 'org', 'io.warp10.quantum.org'
-    relocate 'jetty', 'io.warp10.quantum.jetty'
-    relocate 'javax', 'io.warp10.quantum.javax'
+    relocate 'org', 'io.warp10.warpstudio.org'
+    relocate 'jetty', 'io.warp10.warpstudio.jetty'
+    relocate 'javax', 'io.warp10.warpstudio.javax'
     classifier = null
 }
 
 publishing {
     publications {
-        QuantumPlugin(MavenPublication) {
+        WarpStudioPlugin(MavenPublication) {
             artifact shadowJar {
                 extension = 'jar'
             }
@@ -120,14 +120,14 @@ bintray {
     dryRun = false
     publish = true
 
-    publications = ['QuantumPlugin']
+    publications = ['WarpStudioPlugin']
 
     pkg {
         repo = 'generic'
         name = archivesBaseName
         userOrg = 'senx'
         licenses = ['Apache-2.0']
-        vcsUrl = 'git@github.com:senx/warp10-quantum-plugin.git'
+        vcsUrl = 'https://gitlab.com/senx/warp10-warpstudio-plugin'
         version {
             name = warpStudioVersion
             released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
