@@ -26,7 +26,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
-archivesBaseName = 'warp10-warpstudio-plugin'
+archivesBaseName = 'warp10-plugin-warpstudio'
 def warpStudioVersion = '1.0.0'
 version = warpStudioVersion
 group = 'io.warp10'
@@ -127,7 +127,7 @@ bintray {
         name = archivesBaseName
         userOrg = 'senx'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://gitlab.com/senx/warp10-warpstudio-plugin'
+        vcsUrl = 'https://gitlab.com/senx/warp10-plugin-warpstudio'
         version {
             name = warpStudioVersion
             released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
