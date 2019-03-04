@@ -27,7 +27,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 archivesBaseName = 'warp10-plugin-warpstudio'
-def warpStudioVersion = '1.0.0'
+def warpStudioVersion = 'v0.0.33'
 version = warpStudioVersion
 group = 'io.warp10'
 
@@ -70,8 +70,9 @@ configurations {
 }
 
 dependencies {
-    provided group:'io.warp10', name: 'warpscript', version: '2.0.1'
-    compile group:'io.warp10', name: 'warp10-warpstudio-server', version: warpStudioVersion
+    provided group:'io.warp10', name: 'warpscript', version: '2.0.3'
+   // compile group:'io.warp10', name: 'warp10-warpstudio-server', version: warpStudioVersion
+    compile files('/home/xavier/workspace/warp-studio/server/build/libs/warp10-warpstudio-server.jar')
 }
 
 sourceSets {
