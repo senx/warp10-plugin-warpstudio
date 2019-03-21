@@ -124,10 +124,10 @@ bintray {
     publications = ['WarpStudioPlugin']
 
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = archivesBaseName
         userOrg = 'senx'
-        licenses = ['Apache-2.0']
+        licenses = [ 'Apache 2.0' ]
         vcsUrl = 'https://gitlab.com/senx/warp10-plugin-warpstudio'
         version {
             name = warpStudioVersion
