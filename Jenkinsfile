@@ -48,7 +48,7 @@ pipeline {
                         message 'Should we deploy to Bintray?'
                     }
                     steps {
-                        sh './gradlew bintrayPublish'
+                        sh './gradlew bintrayUpload'
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
