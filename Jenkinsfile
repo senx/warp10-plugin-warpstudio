@@ -17,7 +17,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 this.notifyBuild('STARTED', version)
-                git credentialsId: 'github', poll: false, url: 'git@gitlab.com:senx/warp10-plugin-warpstudio.git'
+                git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-plugin-warpstudio.git'
                 echo "Building ${version}"
             }
         }

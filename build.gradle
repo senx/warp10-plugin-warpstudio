@@ -70,9 +70,8 @@ configurations {
 }
 
 dependencies {
-    provided group:'io.warp10', name: 'warpscript', version: '2.0.3'
-   // compile group:'io.warp10', name: 'warp10-warpstudio-server', version: warpStudioVersion
-    compile files('/home/xavier/workspace/warp-studio/server/build/libs/warp10-warpstudio-server.jar')
+    provided group: 'io.warp10', name: 'warpscript', version: '2.0.3'
+    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: warpStudioVersion
 }
 
 sourceSets {
@@ -127,11 +126,11 @@ bintray {
         repo = 'maven'
         name = archivesBaseName
         userOrg = 'senx'
-        licenses = [ 'Apache 2.0' ]
-        vcsUrl = 'https://gitlab.com/senx/warp10-plugin-warpstudio'
+        licenses = ['Apache 2.0']
+        vcsUrl = 'https://github.com/senx/warp10-plugin-warpstudio'
         version {
             name = warpStudioVersion
-            released  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
+            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
             vcsTag = warpStudioVersion
         }
     }
