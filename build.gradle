@@ -177,7 +177,8 @@ bintray {
 
         repo = project.ext.bintrayRepo
         name = project.ext.name
-
+        userOrg = 'senx'
+        
         if (project.hasProperty('bintrayUserOrg') || null != System.getenv('BINTRAY_USERORG')) {
             userOrg = project.hasProperty('bintrayUserOrg') ? project.property('bintrayUserOrg') : System.getenv('BINTRAY_USERORG')
         }
