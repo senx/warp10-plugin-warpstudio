@@ -27,7 +27,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 archivesBaseName = 'warp10-plugin-warpstudio'
-def warpStudioVersion = 'v0.0.77'
+def warpStudioVersion = 'v0.0.79'
 version = warpStudioVersion
 group = 'io.warp10'
 
