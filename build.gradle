@@ -124,7 +124,7 @@ publishing {
             }
             groupId 'io.warp10'
             artifactId archivesBaseName
-            version warpStudioVersion
+            version version
         }
     }
 }
