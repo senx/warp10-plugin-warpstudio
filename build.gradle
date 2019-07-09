@@ -40,7 +40,8 @@ def getVersionName(String revision) {
 }
 archivesBaseName = 'warp10-plugin-warpstudio'
 def warpStudioVersion = 'v0.0.79'
-version = getVersionName('0.0.0')
+def pluginVersion = getVersionName('0.0.0')
+version = pluginVersion
 group = 'io.warp10'
 
 sourceCompatibility = 1.7
@@ -124,7 +125,7 @@ publishing {
             }
             groupId 'io.warp10'
             artifactId archivesBaseName
-            version version
+            version pluginVersion
         }
     }
 }
@@ -148,7 +149,7 @@ bintray {
         version {
             name = warpStudioVersion
             released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
-            vcsTag = warpStudioVersion
+            vcsTag = pluginVersion
         }
     }
 }
