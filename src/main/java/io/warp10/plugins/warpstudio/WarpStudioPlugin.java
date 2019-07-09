@@ -22,11 +22,11 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 /**
- * The type Quantum plugin.
+ * The type WarpStudio plugin.
  */
 public class WarpStudioPlugin extends AbstractWarp10Plugin implements Runnable {
 
-  private static final String WARPSTUDIO_MAIN_CLASS = "io.warp10.plugins.warpstudio.WarpStudioPlugin";
+  private static final String WARPSTUDIO_MAIN_CLASS = "io.warp10.warpstudio.Main";
   private static final String CONF_WARPSTUDIO_HOST = "warpstudio.host";
   private static final String CONF_WARPSTUDIO_PORT = "warpstudio.port";
 
