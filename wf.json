@@ -1,8 +1,8 @@
 {
   "type": "plugin",
-  "group": " io.warp10",
-  "artifact": " warp10-warpstudio-plugin",
-  "version": "0.0.73",
+  "group": "io.warp10",
+  "artifact": "warp10-plugin-warpstudio",
+  "version": "v0.0.79",
   "description": "WarpStudio, the WarpScript editor",
   "author": "SenX",
   "email": "contact@senx.io",
@@ -13,6 +13,11 @@
     "Editor",
     "WarpScript",
     "Warp 10"
+  ],
+  "conf" : [
+    "warpstudio.host=0.0.0.0",
+    "warpstudio.port=8090",
+    "warp10.plugin.warpstudio=io.warp10.plugins.warpstudio.WarpStudioPlugin"
   ]
 }
 

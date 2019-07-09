@@ -76,7 +76,7 @@ dependencies {
 
 sourceSets {
     main {
-        compileClasspath += configurations.provided
+        compileClasspath = compileClasspath + configurations.provided
     }
 }
 
@@ -97,6 +97,11 @@ shadowJar {
     relocate 'jetty', 'io.warp10.warpstudio.jetty'
     relocate 'javax', 'io.warp10.warpstudio.javax'
     classifier = null
+    from('.') {
+        include 'README.md'
+        include 'wf.json'
+        include 'warp10.conf'
+    }
 }
 
 publishing {
