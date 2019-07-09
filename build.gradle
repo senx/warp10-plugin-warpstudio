@@ -38,11 +38,15 @@ def getVersionName(String revision) {
     }
     return newRevision
 }
-archivesBaseName = 'warp10-plugin-warpstudio'
 def warpStudioVersion = 'v0.0.79'
-def pluginVersion = getVersionName('0.0.0')
-version = pluginVersion
-group = 'io.warp10'
+
+project.ext.bintrayRepo = 'maven'
+project.ext.bintrayVcsUrl = 'https://github.com/senx/warp10-plugin-warpstudio'
+project.ext.bintrayLicenses = [ 'Apache-2.0' ]
+project.ext.group = 'io.warp10'
+project.ext.name = 'warp10-plugin-warpstudio'
+project.ext.version = getVersionName('0.0.0')
+version project.ext.version
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -99,12 +103,20 @@ idea {
         scopes.PROVIDED.plus += [configurations.provided]
     }
 }
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
 
 shadowJar {
     manifest {
         attributes(
                 'Main-Class': 'io.warp10.warpstudio.Main'
         )
+        attributes('WarpFleet-Description': 'WarpStudio™ plugin')
+        attributes('WarpFleet-Group': project.ext.group)
+        attributes('WarpFleet-Artifact': project.ext.name)
+        attributes('WarpFleet-Version': project.ext.version)
     }
     relocate 'org', 'io.warp10.warpstudio.org'
     relocate 'jetty', 'io.warp10.warpstudio.jetty'
@@ -119,37 +131,60 @@ shadowJar {
 
 publishing {
     publications {
-        WarpStudioPlugin(MavenPublication) {
-            artifact shadowJar {
-                extension = 'jar'
-            }
-            groupId 'io.warp10'
-            artifactId archivesBaseName
-            version pluginVersion
+        //
+        // Publication for the standard jar
+        //
+
+        stdjar(MavenPublication) {
+            groupId project.ext.group
+            artifactId project.ext.name
+            version project.ext.version
+
+            // We publish the result of the 'jar' task and the sources jar
+            from components.java
+            artifact sourcesJar
+        }
+
+        //
+        // Publication for the über jar containing all dependencies
+        //
+
+        uberjar(MavenPublication) {
+            groupId project.ext.group
+            artifactId project.ext.name
+            version project.ext.version
+
+            // Publish the über jar and the sources
+            artifact sourcesJar
+            artifact shadowJar
         }
     }
 }
 
-// DEPLOY ON BINTRAY
 bintray {
+    dryRun = false
+
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
-    dryRun = false
-    publish = true
-
-    publications = ['WarpStudioPlugin']
+    publications = project.ext.uberjar ? [ 'uberjar' ] : ['stdjar' ]
+    publish = null != System.getProperty('publish')
 
     pkg {
-        repo = 'maven'
-        name = archivesBaseName
-        userOrg = 'senx'
-        licenses = ['Apache 2.0']
-        vcsUrl = 'https://github.com/senx/warp10-plugin-warpstudio'
+
+        repo = project.ext.bintrayRepo
+        name = project.ext.name
+
+        if (project.hasProperty('bintrayUserOrg') || null != System.getenv('BINTRAY_USERORG')) {
+            userOrg = project.hasProperty('bintrayUserOrg') ? project.property('bintrayUserOrg') : System.getenv('BINTRAY_USERORG')
+        }
+
+        vcsUrl = project.ext.bintrayVcsUrl
+        licenses = project.ext.bintrayLicenses
+
         version {
-            name = warpStudioVersion
-            released = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").format(new Date())
-            vcsTag = pluginVersion
+            version = version
+            released = new Date()
         }
     }
 }
