@@ -30,7 +30,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh './gradlew shadowJar'
+                sh './gradlew -Duberjar shadowJar'
                 archiveArtifacts "build/libs/*.jar"
             }
         }
