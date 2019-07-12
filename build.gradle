@@ -40,7 +40,7 @@ def getVersionName(String revision) {
     return newRevision
 }
 
-def warpStudioVersion = 'v0.0.80'
+def warpStudioVersion = 'v0.0.82'
 
 project.ext.bintrayRepo = 'maven'
 project.ext.bintrayVcsUrl = 'https://github.com/senx/warp10-plugin-warpstudio'
