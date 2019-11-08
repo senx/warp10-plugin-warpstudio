@@ -2,7 +2,7 @@
   "type": "plugin",
   "group": "io.warp10",
   "artifact": "warp10-plugin-warpstudio",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "WarpStudio, the WarpScript editor",
   "author": "SenX",
   "email": "contact@senx.io",
