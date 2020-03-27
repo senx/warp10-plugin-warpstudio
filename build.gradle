@@ -57,29 +57,12 @@ targetCompatibility = 1.7
 //
 repositories {
     jcenter()
-    mavenCentral()
-    mavenLocal()
-    maven {
-        url 'https://repository.apache.org/content/groups/public'
-    }
-    maven {
-        url "http://maven.twttr.com"
-    }
-
     maven {
         url 'https://dl.bintray.com/senx/maven'
     }
 
     maven {
-        url 'https://dl.bintray.com/senx/generic'
-    }
-
-    maven {
         url 'https://dl.bintray.com/hbs/maven'
-    }
-
-    maven {
-        url "http://nexus.bedatadriven.com/content/groups/public/"
     }
 }
 
@@ -88,8 +71,9 @@ configurations {
 }
 
 dependencies {
-    provided group: 'io.warp10', name: 'warpscript', version: '2.1.0'
-    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
+    provided 'io.warp10:warpscript:+'
+   // compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
+    compile files('/home/xavier/workspace/warp-studio/server/build/libs/warp10-warpstudio-server.jar')
 }
 
 sourceSets {
@@ -121,7 +105,6 @@ shadowJar {
     }
     relocate 'org', 'io.warp10.warpstudio.org'
     relocate 'jetty', 'io.warp10.warpstudio.jetty'
-    relocate 'javax', 'io.warp10.warpstudio.javax'
     classifier = null
     from('.') {
         include 'README.md'
