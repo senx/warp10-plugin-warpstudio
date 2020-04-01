@@ -13,7 +13,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
-import java.text.SimpleDateFormat
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.2'
@@ -60,6 +59,9 @@ repositories {
     maven {
         url 'https://dl.bintray.com/senx/maven'
     }
+    maven {
+        url 'https://dl.bintray.com/senx/generic'
+    }
 
     maven {
         url 'https://dl.bintray.com/hbs/maven'
@@ -71,8 +73,8 @@ configurations {
 }
 
 dependencies {
-   provided 'io.warp10:warpscript:+'
-   compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
+    provided 'io.warp10:warpscript:+'
+    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
 }
 
 sourceSets {
