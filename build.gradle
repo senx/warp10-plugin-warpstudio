@@ -71,9 +71,8 @@ configurations {
 }
 
 dependencies {
-    provided 'io.warp10:warpscript:+'
-   // compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
-    compile files('/home/xavier/workspace/warp-studio/server/build/libs/warp10-warpstudio-server.jar')
+   provided 'io.warp10:warpscript:+'
+   compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
 }
 
 sourceSets {
