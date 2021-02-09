@@ -36,7 +36,7 @@ pipeline {
 
         stage('Deploy to Snapshot') {
             steps {
-                nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
+                nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-releases', packages: [
                         [
                                 $class         : 'MavenPackage',
                                 mavenAssetList : [
@@ -44,7 +44,7 @@ pipeline {
                                         [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar'],
                                         [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-javadoc.jar']
                                 ],
-                                mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version + '-SNAPSHOT']
+                                mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version ]
                         ]
                 ]
             }
