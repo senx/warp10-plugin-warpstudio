@@ -29,24 +29,27 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh './gradlew -Duberjar shadowJar sourcesJar'
+                sh './gradlew -Duberjar shadowJar sourcesJar javadocJar'
                 archiveArtifacts "build/libs/*.jar"
             }
         }
 
         stage('Deploy to Snapshot') {
-
+            steps {
+                createTag nexusInstanceId: 'nex', tagAttributesJson: '{"createdBy" : "Jenkins"}', tagName: 'build-' + version
+            }
             steps {
                 nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
                         [
                                 $class         : 'MavenPackage',
                                 mavenAssetList : [
                                         [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '.jar'],
-                                        [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar']
+                                        [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar'],
+                                        [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-javadoc.jar']
                                 ],
                                 mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version + '-SNAPSHOT']
                         ]
-                ]
+                ], tagName: 'build-' + version
             }
         }
 
