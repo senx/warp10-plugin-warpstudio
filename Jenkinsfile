@@ -9,8 +9,6 @@ pipeline {
     }
     environment {
         version = "${getVersion()}"
-        BINTRAY_USER = getParam('BINTRAY_USER')
-        BINTRAY_API_KEY = getParam('BINTRAY_API_KEY')
     }
     stages {
 
@@ -31,7 +29,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh './gradlew -Duberjar shadowJar'
+                sh './gradlew -Duberjar shadowJar sourcesJar'
                 archiveArtifacts "build/libs/*.jar"
             }
         }
