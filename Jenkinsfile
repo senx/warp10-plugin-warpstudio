@@ -36,7 +36,6 @@ pipeline {
 
         stage('Deploy to Snapshot') {
             steps {
-                createTag nexusInstanceId: 'nex', tagAttributesJson: '{"createdBy" : "Jenkins"}', tagName: 'build-' + version
                 nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
                         [
                                 $class         : 'MavenPackage',
@@ -47,7 +46,7 @@ pipeline {
                                 ],
                                 mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version + '-SNAPSHOT']
                         ]
-                ], tagName: 'build-' + version
+                ]
             }
         }
 
