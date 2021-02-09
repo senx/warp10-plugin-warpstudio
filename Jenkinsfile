@@ -17,7 +17,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 this.notifyBuild('STARTED', version)
-                git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-plugin-warpstudio.git'
+                git poll: false, url: 'git@gitlab.com:senx/warp10-plugin-warpstudio.git'
+                // git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-plugin-warpstudio.git'
                 echo "Building ${version}"
             }
         }
@@ -33,6 +34,19 @@ pipeline {
                 sh './gradlew -Duberjar shadowJar'
                 archiveArtifacts "build/libs/*.jar"
             }
+        }
+
+        stage('Deploy to Snapshot') {
+            nexusPublisher  nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
+                    [
+                            $class: 'MavenPackage',
+                            mavenAssetList: [
+                                    [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-'+ version + '.jar'],
+                                    [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin' + version + '-sources.jar']
+                            ],
+                            mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version]
+                    ]
+            ], tagName: version
         }
 
         stage('Deploy') {
