@@ -46,7 +46,7 @@ pipeline {
                                 ],
                                 mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version]
                         ]
-                ]
+                ], tagName: 'build-' + version
             }
         }
 
