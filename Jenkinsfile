@@ -35,6 +35,19 @@ pipeline {
             }
         }
 
+        stage('Deploy to Snapshot') {
+            nexusPublisher  nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
+                    [
+                            $class: 'MavenPackage',
+                            mavenAssetList: [
+                                    [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-'+ version + '.jar'],
+                                    [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin' + version + '-sources.jar']
+                            ],
+                            mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version]
+                    ]
+            ], tagName: version
+        }
+
         stage('Deploy') {
             when {
                 expression { return isItATagCommit() }

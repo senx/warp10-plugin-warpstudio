@@ -115,12 +115,29 @@ shadowJar {
 }
 
 publishing {
+    repositories {
+        maven {
+            name "nexus"
+            url "http://localhost:8081/nexus/content/repositories/test/"
+            credentials {
+                username "admin"
+                password "admin123"
+
+            }
+        }
+    }
     publications {
         //
         // Publication for the standard jar
         //
-
-        stdjar(MavenPublication) {
+        maven(MavenPublication) {
+            groupId project.ext.group
+            artifactId project.ext.name
+            version project.ext.version
+            artifact sourcesJar
+            artifact shadowJar
+        }
+       /* stdjar(MavenPublication) {
             groupId project.ext.group
             artifactId project.ext.name
             version project.ext.version
@@ -142,10 +159,11 @@ publishing {
             // Publish the über jar and the sources
             artifact sourcesJar
             artifact shadowJar
-        }
+        }*/
+
     }
 }
-
+/*
 bintray {
     dryRun = false
 
@@ -174,7 +192,7 @@ bintray {
         }
     }
 }
-
+*/
 artifacts {
     archives shadowJar
 }
