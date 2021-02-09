@@ -37,8 +37,6 @@ pipeline {
         stage('Deploy to Snapshot') {
             steps {
                 createTag nexusInstanceId: 'nex', tagAttributesJson: '{"createdBy" : "Jenkins"}', tagName: 'build-' + version
-            }
-            steps {
                 nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-snapshots', packages: [
                         [
                                 $class         : 'MavenPackage',
