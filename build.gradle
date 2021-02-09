@@ -74,7 +74,7 @@ configurations {
 
 dependencies {
     provided 'io.warp10:warpscript:+'
-    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v' + project.ext.version
+    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.42' // + project.ext.version
 }
 
 sourceSets {
