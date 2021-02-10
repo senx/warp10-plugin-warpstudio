@@ -63,7 +63,8 @@ pipeline {
                         message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        nexusPublisher nexusInstanceId: 'sonatype', nexusRepositoryId: 'releases', packages: [
+                        sh "./gradlew sign -PsecretKeyRingFile=${getParam('secretKeyRingFile')} -PpublicKeyPassword=${getParam('GPG')}"
+                        nexusPublisher nexusInstanceId: 'sonatype', nexusRepositoryId: 'staging', packages: [
                                 [
                                         $class         : 'MavenPackage',
                                         mavenAssetList : [

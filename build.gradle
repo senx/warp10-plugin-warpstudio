@@ -22,6 +22,8 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: "signing"
+apply plugin: "maven"
 
 def getVersionName(String revision) {
     String newRevision = revision
@@ -46,6 +48,9 @@ project.ext.name = 'warp10-plugin-warpstudio'
 project.ext.version = getVersionName('0.0.0')
 version project.ext.version
 
+signing.keyId='6A539EAF'
+signing.password=publicKeyPassword
+signing.secretKeyRingFile=secretKeyRingFile
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
@@ -132,5 +137,53 @@ publishing {
     }
 }
 artifacts {
-    archives shadowJar
+    archives shadowJar, javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Example Application'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                url 'http://www.example.com/example-application'
+
+                scm {
+                    connection 'scm:svn:http://foo.googlecode.com/svn/trunk/'
+                    developerConnection 'scm:svn:https://foo.googlecode.com/svn/trunk/'
+                    url 'http://foo.googlecode.com/svn/trunk/'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'manfred'
+                        name 'Manfred Moser'
+                        email 'manfred@sonatype.com'
+                    }
+                }
+            }
+        }
+    }
 }
