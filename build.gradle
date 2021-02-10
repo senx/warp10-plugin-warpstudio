@@ -47,6 +47,9 @@ project.ext.uberjar = null != System.getProperty('uberjar')
 project.ext.name = 'warp10-plugin-warpstudio'
 project.ext.version = getVersionName('0.0.0')
 version project.ext.version
+group = project.ext.group
+archivesBaseName = project.ext.name
+
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -138,7 +141,7 @@ artifacts {
 }
 
 signing {
-    useGpgCmd()
+//    useGpgCmd()
     sign configurations.archives
 }
 
@@ -154,7 +157,6 @@ uploadArchives {
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
             }
-
             pom.project {
                 name project.ext.name
                 packaging 'jar'
@@ -163,6 +165,12 @@ uploadArchives {
                         name 'The Apache License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
+                }
+                description 'WarpStudio, the WarpScript editor'
+                url 'https://warp10.io'
+
+                scm {
+                    url 'https://github.com/senx/warp10-plugin-warpstudio.git'
                 }
 
                 developers {
@@ -176,3 +184,4 @@ uploadArchives {
         }
     }
 }
+

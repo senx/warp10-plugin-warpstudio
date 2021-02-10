@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 import hudson.model.*
 
+def args = "-Psigning.password=${getParam('GPG')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -Psigning.keyId=${getParam('keyId')} -Psigning.secretKeyRingFile=${getParam('secretKeyRingFile')}"
 pipeline {
     agent any
     options {
@@ -23,13 +24,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew clean build -Psigning.password=${getParam('GPG')}"
+                sh "./gradlew clean build ${args}"
             }
         }
 
         stage('Package') {
             steps {
-                sh "./gradlew -Duberjar shadowJar sourcesJar javadocJar -Psigning.password=${getParam('GPG')}"
+                sh "./gradlew -Duberjar shadowJar sourcesJar javadocJar ${args}"
                 archiveArtifacts "build/libs/*.jar"
             }
         }
@@ -63,18 +64,7 @@ pipeline {
                         message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        sh "./gradlew sign -Psigning.password=${getParam('GPG')}"
-                        nexusPublisher nexusInstanceId: 'sonatype', nexusRepositoryId: 'staging', packages: [
-                                [
-                                        $class         : 'MavenPackage',
-                                        mavenAssetList : [
-                                                [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '.jar'],
-                                                [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar'],
-                                                [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-javadoc.jar']
-                                        ],
-                                        mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version ]
-                                ]
-                        ]
+                        sh "./gradlew uploadArchives ${args}"
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
