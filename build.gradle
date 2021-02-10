@@ -141,7 +141,7 @@ signing {
     useGpgCmd()
     sign configurations.archives
 }
-/*
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -156,17 +156,8 @@ uploadArchives {
             }
 
             pom.project {
-                name 'Example Application'
+                name project.ext.name
                 packaging 'jar'
-                // optionally artifactId can be defined here
-                url 'http://www.example.com/example-application'
-
-                scm {
-                    connection 'scm:svn:http://foo.googlecode.com/svn/trunk/'
-                    developerConnection 'scm:svn:https://foo.googlecode.com/svn/trunk/'
-                    url 'http://foo.googlecode.com/svn/trunk/'
-                }
-
                 licenses {
                     license {
                         name 'The Apache License, Version 2.0'
@@ -176,13 +167,12 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id 'manfred'
-                        name 'Manfred Moser'
-                        email 'manfred@sonatype.com'
+                        id 'senx'
+                        name 'SenX'
+                        email 'contact@senx.io'
                     }
                 }
             }
         }
     }
 }
-*/
