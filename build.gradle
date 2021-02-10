@@ -16,14 +16,12 @@
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.2'
-    id "com.jfrog.bintray" version "1.8.4"
 }
 
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 def getVersionName(String revision) {
     String newRevision = revision
@@ -120,17 +118,6 @@ shadowJar {
 }
 
 publishing {
-    repositories {
-        maven {
-            name "nexus"
-            url "http://localhost:8081/nexus/content/repositories/test/"
-            credentials {
-                username "admin"
-                password "admin123"
-
-            }
-        }
-    }
     publications {
         //
         // Publication for the standard jar
@@ -142,62 +129,8 @@ publishing {
             artifact sourcesJar
             artifact shadowJar
         }
-       /* stdjar(MavenPublication) {
-            groupId project.ext.group
-            artifactId project.ext.name
-            version project.ext.version
-
-            // We publish the result of the 'jar' task and the sources jar
-            from components.java
-            artifact sourcesJar
-        }
-
-        //
-        // Publication for the über jar containing all dependencies
-        //
-
-        uberjar(MavenPublication) {
-            groupId project.ext.group
-            artifactId project.ext.name
-            version project.ext.version
-
-            // Publish the über jar and the sources
-            artifact sourcesJar
-            artifact shadowJar
-        }*/
-
     }
 }
-/*
-bintray {
-    dryRun = false
-
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-
-    publications = project.ext.uberjar ? ['uberjar'] : ['stdjar']
-    publish = null != System.getProperty('publish')
-
-    pkg {
-
-        repo = project.ext.bintrayRepo
-        name = project.ext.name
-        userOrg = 'senx'
-
-        if (project.hasProperty('bintrayUserOrg') || null != System.getenv('BINTRAY_USERORG')) {
-            userOrg = project.hasProperty('bintrayUserOrg') ? project.property('bintrayUserOrg') : System.getenv('BINTRAY_USERORG')
-        }
-
-        vcsUrl = project.ext.bintrayVcsUrl
-        licenses = project.ext.bintrayLicenses
-
-        version {
-            version = version
-            released = new Date()
-        }
-    }
-}
-*/
 artifacts {
     archives shadowJar
 }

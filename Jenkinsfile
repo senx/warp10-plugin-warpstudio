@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Snapshot') {
+        stage('Deploy to SenX\'s Nexus') {
             steps {
                 nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-releases', packages: [
                         [
@@ -50,20 +50,30 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Publish') {
             when {
                 expression { return isItATagCommit() }
             }
             parallel {
-                stage('Deploy to Bintray') {
+                stage('Deploy to Maven Central') {
                     options {
                         timeout(time: 2, unit: 'HOURS')
                     }
                     input {
-                        message 'Should we deploy to Bintray?'
+                        message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        sh './gradlew -Duberjar -Dpublish bintrayUpload'
+                        nexusPublisher nexusInstanceId: 'sonatype', nexusRepositoryId: 'releases', packages: [
+                                [
+                                        $class         : 'MavenPackage',
+                                        mavenAssetList : [
+                                                [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '.jar'],
+                                                [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar'],
+                                                [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-javadoc.jar']
+                                        ],
+                                        mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version ]
+                                ]
+                        ]
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
