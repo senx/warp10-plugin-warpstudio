@@ -23,13 +23,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                sh "./gradlew clean build -Psigning.password=${getParam('GPG')}"
             }
         }
 
         stage('Package') {
             steps {
-                sh './gradlew -Duberjar shadowJar sourcesJar javadocJar'
+                sh "./gradlew -Duberjar shadowJar sourcesJar javadocJar -Psigning.password=${getParam('GPG')}"
                 archiveArtifacts "build/libs/*.jar"
             }
         }
@@ -63,7 +63,7 @@ pipeline {
                         message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        sh "./gradlew sign -Psigning.secretKeyRingFile=${getParam('secretKeyRingFile')} -Psigning.password=${getParam('GPG')} -Psigning.keyId=6A539EAF"
+                        sh "./gradlew sign -Psigning.password=${getParam('GPG')}"
                         nexusPublisher nexusInstanceId: 'sonatype', nexusRepositoryId: 'staging', packages: [
                                 [
                                         $class         : 'MavenPackage',
