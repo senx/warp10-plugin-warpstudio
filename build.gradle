@@ -107,6 +107,8 @@ task javadocJar(type: Jar) {
 nexusStaging {
     packageGroup = "io.warp10"
     stagingProfileId = "io.warp10"
+    username ossrhUsername
+    password ossrhPassword
 }
 
 shadowJar {
