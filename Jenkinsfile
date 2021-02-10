@@ -1,18 +1,18 @@
 #!/usr/bin/env groovy
 import hudson.model.*
 
-def args = "-Psigning.password=${getParam('GPG')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -Psigning.keyId=${getParam('keyId')} -Psigning.secretKeyRingFile=${getParam('secretKeyRingFile')}"
 pipeline {
     agent any
     options {
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
+
     environment {
+        GRADLE_ARGS = "-Psigning.password=${getParam('GPG')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -Psigning.keyId=${getParam('keyId')} -Psigning.secretKeyRingFile=${getParam('secretKeyRingFile')}"
         version = "${getVersion()}"
     }
     stages {
-
         stage('Checkout') {
             steps {
                 this.notifyBuild('STARTED', version)
@@ -24,13 +24,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew clean build ${args}"
+                sh './gradlew clean build $GRADLE_ARGS'
             }
         }
 
         stage('Package') {
             steps {
-                sh "./gradlew -Duberjar shadowJar sourcesJar javadocJar ${args}"
+                sh './gradlew -Duberjar shadowJar sourcesJar javadocJar $GRADLE_ARGS'
                 archiveArtifacts "build/libs/*.jar"
             }
         }
@@ -64,8 +64,8 @@ pipeline {
                         message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        sh "./gradlew uploadArchives ${args}"
-                        sh "./gradlew closeRepository ${args}"
+                        sh './gradlew uploadArchives $GRADLE_ARGS'
+                        sh './gradlew closeRepository $GRADLE_ARGS'
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
