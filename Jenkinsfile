@@ -41,9 +41,9 @@ pipeline {
                         [
                                 $class         : 'MavenPackage',
                                 mavenAssetList : [
-                                        [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '.jar'],
-                                        [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-sources.jar'],
-                                        [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-warpstudio-plugin-' + version + '-javadoc.jar']
+                                        [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '.jar'],
+                                        [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-sources.jar'],
+                                        [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-javadoc.jar']
                                 ],
                                 mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version ]
                         ]
