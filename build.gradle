@@ -16,7 +16,9 @@
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'io.codearte.nexus-staging' version '0.22.0'
 }
+
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -100,6 +102,11 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar) {
     from javadoc
     classifier = 'javadoc'
+}
+
+nexusStaging {
+    packageGroup = "io.warp10"
+    stagingProfileId = "io.warp10"
 }
 
 shadowJar {

@@ -65,6 +65,7 @@ pipeline {
                     }
                     steps {
                         sh "./gradlew uploadArchives ${args}"
+                        sh "./gradlew closeRepository ${args}"
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
