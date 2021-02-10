@@ -48,9 +48,6 @@ project.ext.name = 'warp10-plugin-warpstudio'
 project.ext.version = getVersionName('0.0.0')
 version project.ext.version
 
-signing.keyId='6A539EAF'
-signing.password=publicKeyPassword
-signing.secretKeyRingFile=secretKeyRingFile
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
