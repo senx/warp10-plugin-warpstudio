@@ -51,9 +51,9 @@ pipeline {
         }
 
         stage('Publish') {
-            when {
+           /* when {
                 expression { return isItATagCommit() }
-            }
+            }*/
             parallel {
                 stage('Deploy to Maven Central') {
                     options {
