@@ -65,7 +65,7 @@ pipeline {
                     }
                     steps {
                         sh './gradlew uploadArchives $GRADLE_ARGS'
-                        sh './gradlew closeRepository $GRADLE_ARGS'
+                        sh './gradlew closeAndReleaseRepository $GRADLE_ARGS'
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }

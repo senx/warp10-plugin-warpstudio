@@ -150,7 +150,7 @@ artifacts {
 }
 
 signing {
-//    useGpgCmd()
+    useGpgCmd()
     sign configurations.archives
 }
 
