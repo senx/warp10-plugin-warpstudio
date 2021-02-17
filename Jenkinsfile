@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment {
-        GRADLE_ARGS = "-Psigning.password=${getParam('GPG')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -Psigning.keyId=${getParam('keyId')} -Psigning.secretKeyRingFile=${getParam('secretKeyRingFile')}"
+        GRADLE_ARGS = "-PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')}"
         version = "${getVersion()}"
     }
     stages {
