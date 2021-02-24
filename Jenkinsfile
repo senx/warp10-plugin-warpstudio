@@ -8,11 +8,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
-    environment {
-        withCredentials([usernamePassword(credentialsId: 'NexSenX', passwordVariable: 'ossrhUsername', usernameVariable: 'ossrhUsername')]) {
+    withCredentials([usernamePassword(credentialsId: 'NexSenX', passwordVariable: 'ossrhUsername', usernameVariable: 'ossrhUsername')]) {
+        environment {
             GRADLE_ARGS = "-PossrhUsername=${ossrhUsername} -PossrhPassword=${ossrhPassword}"
+            version = "${getVersion()}"
         }
-        version = "${getVersion()}"
     }
     stages {
         stage('Checkout') {
@@ -47,16 +47,16 @@ pipeline {
                                         [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-sources.jar'],
                                         [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-javadoc.jar']
                                 ],
-                                mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version ]
+                                mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version]
                         ]
                 ]
             }
         }
 
         stage('Publish') {
-           /* when {
-                expression { return isItATagCommit() }
-            }*/
+            /* when {
+                 expression { return isItATagCommit() }
+             }*/
             parallel {
                 stage('Deploy to Maven Central') {
                     options {
