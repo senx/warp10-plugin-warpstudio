@@ -10,7 +10,7 @@ pipeline {
 
     environment {
         NexSenX = credentials('NexSenX')
-        GRADLE_ARGS = "-PossrhUsername=${env.NexSenX_USR} -PossrhPassword=${env.NexSenX_PSW}"
+        GRADLE_ARGS = "-PossrhUsername=${env.NexSenX_USR} -PossrhPassword=${env.NexSenX_PSW} -Psigning.gnupg.keyName=BD49DA0A"
         version = "${getVersion()}"
     }
     stages {
