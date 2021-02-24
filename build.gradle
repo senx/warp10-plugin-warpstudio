@@ -60,9 +60,16 @@ targetCompatibility = 1.7
 // Repositories for dependency resolution
 //
 repositories {
-    mavenCentral()
+    jcenter()
     maven {
-        url "http://172.16.0.21:8081/repository/maven-public/"
+        url 'https://dl.bintray.com/senx/maven'
+    }
+    maven {
+        url 'https://dl.bintray.com/senx/generic'
+    }
+
+    maven {
+        url 'https://dl.bintray.com/hbs/maven'
     }
 }
 
@@ -72,8 +79,7 @@ configurations {
 
 dependencies {
     provided 'io.warp10:warpscript:+'
-    // compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.42' // + project.ext.version
-    implementation 'io.warp10:warp10-warpstudio-server:v1.0.31'
+    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.42' // + project.ext.version
 }
 
 sourceSets {

@@ -8,11 +8,10 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
-    withCredentials([usernamePassword(credentialsId: 'NexSenX', passwordVariable: 'ossrhUsername', usernameVariable: 'ossrhUsername')]) {
-        environment {
-            GRADLE_ARGS = "-PossrhUsername=${ossrhUsername} -PossrhPassword=${ossrhPassword}"
-            version = "${getVersion()}"
-        }
+    environment {
+        NexSenX = credentials('NexSenX')
+        GRADLE_ARGS = "-PossrhUsername=${env.NexSenX_USR} -PossrhPassword=${env.NexSenX_PSW}"
+        version = "${getVersion()}"
     }
     stages {
         stage('Checkout') {
@@ -55,8 +54,8 @@ pipeline {
 
         stage('Publish') {
             /* when {
-                 expression { return isItATagCommit() }
-             }*/
+             expression { return isItATagCommit() }
+         }*/
             parallel {
                 stage('Deploy to Maven Central') {
                     options {
