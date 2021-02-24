@@ -106,8 +106,6 @@ task javadocJar(type: Jar) {
 
 if (project.hasProperty("ossrhUsername")) {
     nexusStaging {
-        packageGroup = "io.warp10.warpstudio"
-        stagingProfileId = "io.warp10"
         username ossrhUsername
         password ossrhPassword
     }
