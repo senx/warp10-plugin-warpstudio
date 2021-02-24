@@ -60,16 +60,9 @@ targetCompatibility = 1.7
 // Repositories for dependency resolution
 //
 repositories {
-    jcenter()
+    mavenCentral()
     maven {
-        url 'https://dl.bintray.com/senx/maven'
-    }
-    maven {
-        url 'https://dl.bintray.com/senx/generic'
-    }
-
-    maven {
-        url 'https://dl.bintray.com/hbs/maven'
+        url "http://172.16.0.21:8081/repository/maven-public/"
     }
 }
 
@@ -79,7 +72,8 @@ configurations {
 
 dependencies {
     provided 'io.warp10:warpscript:+'
-    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.42' // + project.ext.version
+    // compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.42' // + project.ext.version
+    implementation 'io.warp10:warp10-warpstudio-server:v1.0.31'
 }
 
 sourceSets {
@@ -104,11 +98,13 @@ task javadocJar(type: Jar) {
     classifier = 'javadoc'
 }
 
-nexusStaging {
-    packageGroup = "io.warp10"
-    stagingProfileId = "io.warp10"
-    username ossrhUsername
-    password ossrhPassword
+if (project.hasProperty("ossrhUsername")) {
+    nexusStaging {
+        packageGroup = "io.warp10"
+        stagingProfileId = "io.warp10"
+        username ossrhUsername
+        password ossrhPassword
+    }
 }
 
 shadowJar {
@@ -154,39 +150,41 @@ signing {
     sign configurations.archives
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+if (project.hasProperty("ossrhUsername")) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-            pom.project {
-                name project.ext.name
-                packaging 'jar'
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                pom.project {
+                    name project.ext.name
+                    packaging 'jar'
+                    licenses {
+                        license {
+                            name 'The Apache License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
                     }
-                }
-                description 'WarpStudio, the WarpScript editor'
-                url 'https://warp10.io'
+                    description 'WarpStudio, the WarpScript editor'
+                    url 'https://warp10.io'
 
-                scm {
-                    url 'https://github.com/senx/warp10-plugin-warpstudio.git'
-                }
+                    scm {
+                        url 'https://github.com/senx/warp10-plugin-warpstudio.git'
+                    }
 
-                developers {
-                    developer {
-                        id 'senx'
-                        name 'SenX'
-                        email 'contact@senx.io'
+                    developers {
+                        developer {
+                            id 'senx'
+                            name 'SenX'
+                            email 'contact@senx.io'
+                        }
                     }
                 }
             }

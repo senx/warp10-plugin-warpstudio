@@ -48,6 +48,46 @@ WarpStudio, the WarpScript editor
     warpstudio.ssl.cert.alias=
     warpstudio.ssl.keymanager.password=
     warpstudio.ssl.idle.timeout=
+    warpstudio.defaults=
     # Plugin activation
     warp10.plugin.warpstudio=io.warp10.plugins.warpstudio.WarpStudioPlugin
 
+
+## Add default GIT remotes and/or backends
+
+    $ java -jar warp10-warpstudio-server-v1.0.31.jar myProps.properties
+
+
+`myProps.properties`:
+
+    warpstudio.defaults=./defBackend-tests.json
+
+
+`defBackend-tests.json`:
+
+```json
+{
+  "backends": [
+    {
+      "id": "localhost",
+      "url": "http://localhost:8080/api/v0",
+      "execEndpoint": "/exec",
+      "findEndpoint": "/find",
+      "fetchEndpoint": "/fetch",
+      "updateEndpoint": "/update",
+      "deleteEndpoint": "/delete",
+      "timeUnit": "us",
+      "name": "Localhost"
+    }, ...
+  ],
+  "remotes": [
+    {
+      "name": "My cool project",
+      "repo": "project-mars-rover",
+      "url": "localhost:8080/api/v0",
+      "token": "xxxxxxxxxxxxxxxxx",
+      "id": "toto"
+    }
+  ]
+}
+```
