@@ -53,9 +53,9 @@ pipeline {
         }
 
         stage('Publish') {
-            /* when {
-             expression { return isItATagCommit() }
-         }*/
+            when {
+                expression { return isItATagCommit() }
+            }
             parallel {
                 stage('Deploy to Maven Central') {
                     options {
@@ -67,6 +67,7 @@ pipeline {
                     steps {
                         sh './gradlew uploadArchives $GRADLE_ARGS'
                         sh './gradlew closeRepository $GRADLE_ARGS'
+                        sh './gradlew releaseRepository $GRADLE_ARGS'
                         this.notifyBuild('PUBLISHED', version)
                     }
                 }
