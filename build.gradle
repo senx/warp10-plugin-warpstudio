@@ -18,10 +18,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'io.codearte.nexus-staging' version '0.22.0'
 }
-
-
 apply plugin: 'idea'
 apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "signing"
@@ -41,9 +40,21 @@ def getVersionName(String revision) {
     return newRevision
 }
 
-project.ext.bintrayRepo = 'maven'
-project.ext.bintrayVcsUrl = 'https://github.com/senx/warp10-plugin-warpstudio'
-project.ext.bintrayLicenses = ['Apache-2.0']
+def getShortVersionName(String revision) {
+    if (null != revision) {
+        if (revision.endsWith('SNAPSHOT')) {
+            return revision
+        }
+    }
+
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--abbrev=0'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim();
+}
+
 project.ext.group = 'io.warp10'
 project.ext.uberjar = null != System.getProperty('uberjar')
 project.ext.name = 'warp10-plugin-warpstudio'
@@ -53,33 +64,26 @@ group = project.ext.group
 archivesBaseName = project.ext.name
 
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-//
-// Repositories for dependency resolution
-//
 repositories {
-    jcenter()
-    maven {
-        url 'https://dl.bintray.com/senx/maven'
-    }
-    maven {
-        url 'https://dl.bintray.com/senx/generic'
-    }
-
-    maven {
-        url 'https://dl.bintray.com/hbs/maven'
-    }
+    mavenCentral()
 }
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 
 configurations {
     provided
 }
 
 dependencies {
-    provided 'io.warp10:warpscript:2.8.0'
-    compile group: 'io.warp10', name: 'warp10-warpstudio-server', version: 'v1.0.43' // + project.ext.version
+    provided 'io.warp10:warpscript:+'
+    compile 'io.warp10:warp10-warpstudio-server:2.0.2' // + project.ext.version
 }
 
 sourceSets {
@@ -94,22 +98,15 @@ idea {
         scopes.PROVIDED.plus += [configurations.provided]
     }
 }
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    classifier = 'javadoc'
-}
 
 if (project.hasProperty("ossrhUsername")) {
     nexusStaging {
+        packageGroup = "io.warp10"
         username ossrhUsername
         password ossrhPassword
     }
 }
+
 
 shadowJar {
     manifest {
@@ -149,13 +146,72 @@ artifacts {
     archives shadowJar, javadocJar, sourcesJar
 }
 
-signing {
-    useGpgCmd()
-    sign configurations.archives
+if (project.hasProperty("signing.gnupg.keyName")) {
+    signing {
+        useGpgCmd()
+        sign publishing.publications
+    }
 }
 
-if (project.hasProperty("ossrhUsername")) {
-    uploadArchives {
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId project.ext.group
+            artifactId project.ext.name
+            version getShortVersionName()
+            from components.java
+            pom {
+                name = project.ext.name
+                description = 'WarpStudio, the WarpScript editor'
+                url = 'https://warp10.io/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'senx'
+                        name = 'SenX'
+                        email = 'contact@senx.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com:senx/warp10-plugin-warpstudio.git'
+                    developerConnection = 'scm:git:git://github.com:senx/warp10-plugin-warpstudio.git'
+                    url = 'https://github.com/senx/warp10-plugin-warpstudio.git'
+                }
+            }
+        }
+    }
+
+    repositories {
+        if (project.hasProperty("ossrhUsername")) {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
+        }
+        if (project.hasProperty("nexusUsername")) {
+            maven {
+                name "nexus"
+                url "$nexusHost/repository/maven-releases/"
+                credentials {
+                    username nexusUsername
+                    password nexusPassword
+                }
+            }
+        }
+    }
+}
+
+
+uploadArchives {
+    if (project.hasProperty("ossrhUsername")) {
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -195,4 +251,5 @@ if (project.hasProperty("ossrhUsername")) {
         }
     }
 }
+
 

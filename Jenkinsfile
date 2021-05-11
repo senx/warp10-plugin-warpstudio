@@ -10,7 +10,7 @@ pipeline {
 
     environment {
         NexSenX = credentials('NexSenX')
-        GRADLE_ARGS = "-PossrhUsername=${env.NexSenX_USR} -PossrhPassword=${env.NexSenX_PSW} -Psigning.gnupg.keyName=BD49DA0A"
+        GRADLE_ARGS = "-Psigning.gnupg.keyName=${getParam('gpgKeyName')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -PnexusHost=${getParam('nexusHost')}  -PnexusUsername=${getParam('nexusUsername')} -PnexusPassword=${getParam('nexusPassword')}"
         version = "${getVersion()}"
     }
     stages {
@@ -36,19 +36,15 @@ pipeline {
             }
         }
 
-        stage('Deploy to SenX\'s Nexus') {
+        stage('Deploy libs to SenX\' Nexus') {
+            options {
+                timeout(time: 2, unit: 'HOURS')
+            }
+            input {
+                message "Should we deploy libs?"
+            }
             steps {
-                nexusPublisher nexusInstanceId: 'nex', nexusRepositoryId: 'maven-releases', packages: [
-                        [
-                                $class         : 'MavenPackage',
-                                mavenAssetList : [
-                                        [classifier: '', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '.jar'],
-                                        [classifier: 'sources', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-sources.jar'],
-                                        [classifier: 'javadoc', extension: 'jar', filePath: 'build/libs/warp10-plugin-warpstudio-' + version + '-javadoc.jar']
-                                ],
-                                mavenCoordinate: [artifactId: 'warp10-plugin-warpstudio', groupId: 'io.warp10', packaging: 'jar', version: version]
-                        ]
-                ]
+                sh './gradlew $GRADLE_ARGS publishMavenPublicationToNexusRepository -x test'
             }
         }
 
@@ -65,7 +61,7 @@ pipeline {
                         message 'Should we deploy to Maven Central?'
                     }
                     steps {
-                        sh './gradlew uploadArchives $GRADLE_ARGS'
+                        sh './gradlew publish $GRADLE_ARGS'
                         sh './gradlew closeRepository $GRADLE_ARGS'
                         sh './gradlew releaseRepository $GRADLE_ARGS'
                         this.notifyBuild('PUBLISHED', version)

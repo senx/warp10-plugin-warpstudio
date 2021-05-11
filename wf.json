@@ -8,7 +8,7 @@
   "email": "contact@senx.io",
   "license": "Apache-2.0",
   "git": "https://github.com/senx/warp10-plugin-warpstudio",
-  "repoUrl": "https://dl.bintray.com/senx/maven/",
+  "repoUrl": "https://repo.maven.apache.org/maven2/",
   "tags": [
     "Editor",
     "WarpScript",
