@@ -9,7 +9,6 @@ pipeline {
     }
 
     environment {
-        NexSenX = credentials('NexSenX')
         GRADLE_ARGS = "-Psigning.gnupg.keyName=${getParam('gpgKeyName')} -PossrhUsername=${getParam('ossrhUsername')} -PossrhPassword=${getParam('ossrhPassword')} -PnexusHost=${getParam('nexusHost')}  -PnexusUsername=${getParam('nexusUsername')} -PnexusPassword=${getParam('nexusPassword')}"
         version = "${getVersion()}"
     }
