@@ -139,6 +139,19 @@ if (project.hasProperty("signing.gnupg.keyName")) {
     }
 }
 
+sourceSets {
+    main {
+        compileClasspath = compileClasspath + configurations.provided
+    }
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
