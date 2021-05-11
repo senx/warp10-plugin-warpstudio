@@ -17,8 +17,9 @@ pipeline {
             steps {
                 this.notifyBuild('STARTED', version)
                 git poll: false, url: 'git@gitlab.com:senx/warp10-plugin-warpstudio.git'
-                // git credentialsId: 'github', poll: false, url: 'git@github.com:senx/warp10-plugin-warpstudio.git'
-                echo "Building ${version}"
+                sh 'git checkout master'
+                sh 'git fetch --tags'
+                sh 'git pull origin master'
             }
         }
 
