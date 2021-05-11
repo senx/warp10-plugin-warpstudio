@@ -127,62 +127,15 @@ configurations {
     provided
 }
 
-
 dependencies {
     provided 'io.warp10:warpscript:+'
     compile 'io.warp10:warp10-warpstudio-server:2.0.2' // + project.ext.version
-}
-
-sourceSets {
-    main {
-        compileClasspath = compileClasspath + configurations.provided
-    }
-}
-
-idea {
-    module {
-        inheritOutputDirs = true
-        scopes.PROVIDED.plus += [configurations.provided]
-    }
-}
-
-shadowJar {
-    manifest {
-        attributes(
-                'Main-Class': 'io.warp10.warpstudio.Main'
-        )
-        attributes('WarpFleet-Description': 'WarpStudio™ plugin')
-        attributes('WarpFleet-Group': project.ext.group)
-        attributes('WarpFleet-Artifact': project.ext.name)
-        attributes('WarpFleet-Version': project.ext.version)
-    }
-    relocate 'org', 'io.warp10.warpstudio.org'
-    relocate 'jetty', 'io.warp10.warpstudio.jetty'
-    classifier = null
-    from('.') {
-        include 'README.md'
-        include 'wf.json'
-        include 'warp10.conf'
-    }
-}
-
-artifacts {
-    archives shadowJar, javadocJar, sourcesJar
 }
 
 if (project.hasProperty("signing.gnupg.keyName")) {
     signing {
         useGpgCmd()
         sign publishing.publications
-    }
-}
-
-
-if (project.hasProperty("ossrhUsername")) {
-    nexusStaging {
-        packageGroup = "io.warp10"
-        username ossrhUsername
-        password ossrhPassword
     }
 }
 
@@ -241,6 +194,19 @@ publishing {
         }
     }
 }
+
+if (project.hasProperty("ossrhUsername")) {
+    nexusStaging {
+        packageGroup = "io.warp10"
+        username ossrhUsername
+        password ossrhPassword
+    }
+}
+
+artifacts {
+    archives shadowJar, javadocJar, sourcesJar
+}
+
 
 uploadArchives {
     if (project.hasProperty("ossrhUsername")) {
