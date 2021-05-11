@@ -150,15 +150,6 @@ idea {
     }
 }
 
-if (project.hasProperty("ossrhUsername")) {
-    nexusStaging {
-        packageGroup = "io.warp10"
-        username ossrhUsername
-        password ossrhPassword
-    }
-}
-
-
 shadowJar {
     manifest {
         attributes(
@@ -187,6 +178,15 @@ if (project.hasProperty("signing.gnupg.keyName")) {
     signing {
         useGpgCmd()
         sign publishing.publications
+    }
+}
+
+
+if (project.hasProperty("ossrhUsername")) {
+    nexusStaging {
+        packageGroup = "io.warp10"
+        username ossrhUsername
+        password ossrhPassword
     }
 }
 
