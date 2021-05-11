@@ -158,8 +158,7 @@ publishing {
             groupId project.ext.group
             artifactId project.ext.name
             version this.getShortVersionName()
-            from components.java
-            artifact shadowJar
+            from components.shadow
             pom {
                 name = project.ext.name
                 description = 'WarpStudio, the WarpScript editor'
