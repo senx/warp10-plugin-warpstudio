@@ -13,7 +13,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
-
 plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.2'
     id 'io.codearte.nexus-staging' version '0.22.0'
@@ -39,9 +38,6 @@ java {
     withSourcesJar()
     withJavadocJar()
 }
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 project.ext.group = 'io.warp10'
 project.ext.uberjar = null != System.getProperty('uberjar')
