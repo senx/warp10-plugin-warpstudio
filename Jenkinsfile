@@ -44,7 +44,7 @@ pipeline {
                 message "Should we deploy libs?"
             }
             steps {
-                sh './gradlew $GRADLE_ARGS publishShadowPublicationToNexusRepository -x test'
+                sh './gradlew $GRADLE_ARGS publishMavenPublicationToNexusRepository -x test'
             }
         }
 
