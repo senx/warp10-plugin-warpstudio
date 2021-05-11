@@ -160,7 +160,7 @@ publishing {
             groupId project.ext.group
             artifactId project.ext.name
             version this.getShortVersionName()
-	    from project.shadow.component(publication)
+            from project.shadow.component(publication)
             pom {
                 name = project.ext.name
                 description = 'WarpStudio, the WarpScript editor'
