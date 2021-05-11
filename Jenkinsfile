@@ -48,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Publish') {
+        stage('Maven Publish') {
             when {
                 expression { return isItATagCommit() }
             }

@@ -195,7 +195,7 @@ publishing {
         maven(MavenPublication) {
             groupId project.ext.group
             artifactId project.ext.name
-            version getShortVersionName()
+            version this.getShortVersionName()
             from components.java
             pom {
                 name = project.ext.name
