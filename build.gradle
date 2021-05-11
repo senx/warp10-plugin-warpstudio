@@ -154,11 +154,12 @@ idea {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        shadow(MavenPublication) {
             groupId project.ext.group
             artifactId project.ext.name
             version this.getShortVersionName()
             from components.java
+            artifact shadowJar
             pom {
                 name = project.ext.name
                 description = 'WarpStudio, the WarpScript editor'
