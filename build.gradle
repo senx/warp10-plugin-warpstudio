@@ -25,6 +25,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: "signing"
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -101,6 +102,7 @@ def isGitRepoSynced() {
 }
 
 shadowJar {
+    baseName project.ext.name
     manifest {
         attributes(
                 'Implementation-Title': "warp10-warpstudio",
@@ -154,11 +156,11 @@ idea {
 
 publishing {
     publications {
-        shadow(MavenPublication) {
+        shadow(MavenPublication) { publication ->
             groupId project.ext.group
             artifactId project.ext.name
             version this.getShortVersionName()
-            from components.shadow
+	    from project.shadow.component(publication)
             pom {
                 name = project.ext.name
                 description = 'WarpStudio, the WarpScript editor'
