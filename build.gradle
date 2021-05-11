@@ -128,20 +128,6 @@ shadowJar {
     }
 }
 
-publishing {
-    publications {
-        //
-        // Publication for the standard jar
-        //
-        maven(MavenPublication) {
-            groupId project.ext.group
-            artifactId project.ext.name
-            version project.ext.version
-            artifact sourcesJar
-            artifact shadowJar
-        }
-    }
-}
 artifacts {
     archives shadowJar, javadocJar, sourcesJar
 }
@@ -208,7 +194,6 @@ publishing {
         }
     }
 }
-
 
 uploadArchives {
     if (project.hasProperty("ossrhUsername")) {
