@@ -1,10 +1,10 @@
 # WarpStudio Plugin
 
-![logo](https://blog.senx.io/wp-content/uploads/2019/03/warpStudio.png)
+![logo](./warpStudio.png)
 
 WarpStudio, the WarpScript editor
 
-[Demo](https://studio.senx.io/)
+[Demo](http://studio.senx.io/)
 
 ## Installation
 
