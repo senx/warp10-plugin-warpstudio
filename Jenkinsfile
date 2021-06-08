@@ -40,7 +40,7 @@ pipeline {
             options {
                 timeout(time: 2, unit: 'HOURS')
             }
-            input {isItATagCommit
+            input {
                 message "Should we deploy libs?"
             }
             steps {
