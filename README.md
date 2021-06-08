@@ -1,6 +1,6 @@
 # WarpStudio Plugin
 
-![logo](./warpStudio.png)
+![logo](https://github.com/senx/warp10-plugin-warpstudio/raw/master/warpStudio.png)
 
 WarpStudio, the WarpScript editor
 
