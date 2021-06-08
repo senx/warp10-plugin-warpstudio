@@ -129,7 +129,7 @@ configurations {
 
 dependencies {
     provided 'io.warp10:warpscript:+'
-    compile 'io.warp10:warp10-warpstudio-server:2.0.2' // + project.ext.version
+    compile 'io.warp10:warp10-warpstudio-server:2.0.4' // + project.ext.version
 }
 
 if (project.hasProperty("signing.gnupg.keyName")) {
