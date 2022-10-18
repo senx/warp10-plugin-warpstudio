@@ -24,6 +24,7 @@ plugins {
 }
 
 project.group = 'io.warp10'
+project.group = 'io.github.steven-gueguen'
 project.description = 'WarpStudio, the WarpScript editor'
 
 // If the current tag is set, then it's a new release. Don't add build number
@@ -42,7 +43,7 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'io.warp10:warpscript:2.11.1'
-    implementation 'io.warp10:warp10-warpstudio-server:' + project.version
+    implementation 'io.warp10:warp10-warpstudio-server:2.0.9'
 }
 
 java {
