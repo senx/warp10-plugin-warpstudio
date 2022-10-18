@@ -24,7 +24,6 @@ plugins {
 }
 
 project.group = 'io.warp10'
-project.group = 'io.github.steven-gueguen'
 project.description = 'WarpStudio, the WarpScript editor'
 
 // If the current tag is set, then it's a new release. Don't add build number
@@ -145,8 +144,6 @@ publishing {
     repositories {
         maven {
             name = "Nexus"
-            // TODO: remove this on prod
-            allowInsecureProtocol = true
 
             def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
             def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
@@ -174,7 +171,7 @@ signing {
 }
 
 
-// Avoid depency warning
+// Avoid dependency warning
 tasks.withType(PublishToMavenRepository) {
     dependsOn(tasks.findByName('signJarPublication'))
     dependsOn(tasks.findByName('signUberjarPublication'))
