@@ -1,5 +1,5 @@
 //
-//   Copyright 2018  SenX S.A.S.
+//   Copyright 2018-2022  SenX S.A.S.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -13,159 +13,112 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
+
 plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
-    id 'io.codearte.nexus-staging' version '0.22.0'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+    id 'net.nemerosa.versioning' version '2.15.1'
 }
 
-// Apply the java plugin to add support for Java
-apply plugin: 'java'
-apply plugin: 'java-library'
-apply plugin: 'idea'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: "signing"
+project.group = 'io.warp10'
+project.description = 'WarpStudio, the WarpScript editor'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+// If the current tag is set, then it's a new release. Don't add build number
+project.version = versioning.info.lastTag + ((versioning.info.tag != null) ? '' : '-' + versioning.info.build)
 
+// Reproducible Builds
+tasks.withType(AbstractArchiveTask) {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
 
 repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    compileOnly 'io.warp10:warpscript:2.11.1'
+    implementation 'io.warp10:warp10-warpstudio-server:2.0.9'
+}
+
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
     withSourcesJar()
     withJavadocJar()
 }
 
-project.ext.group = 'io.warp10'
-project.ext.uberjar = null != System.getProperty('uberjar')
-project.ext.name = 'warp10-plugin-warpstudio'
-project.ext.version = getShortVersionName()
-version getShortVersionName()
-group = project.ext.group
-archivesBaseName = project.ext.name
-
-
-// ------------------------------------------------------------------
-//                    AUTO RELEASE MANAGEMENT
-// Gets the version name from the latest Git tag
-// if no commit occurs -> the name of the tag likes 0.0.1
-// if commit occurs -> 0.0.1-12-aabb1122 (number of commits + version number)
-// ------------------------------------------------------------------
-def getVersionName(String revision) {
-    if (null != revision) {
-        if (revision.endsWith('SNAPSHOT')) {
-            return revision
+sourceSets {
+    main {
+        resources {
+            srcDirs 'src/main/warpscript'
         }
     }
-
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags', '--always'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim();
 }
 
-def getShortVersionName(String revision) {
-    if (null != revision) {
-        if (revision.endsWith('SNAPSHOT')) {
-            return revision
-        }
+jar {
+    manifest {
+        attributes('WarpFleet-Description': project.description)
+        attributes('WarpFleet-Group': project.group)
+        attributes('WarpFleet-Artifact': project.name)
+        attributes('WarpFleet-Version': project.version)
     }
-
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags', '--abbrev=0'
-        standardOutput = stdout
+    from('.') {
+        include 'README.md'
+        include project.group + '-' + project.name + '.conf'
+        include 'wf.json'
     }
-    return stdout.toString().trim();
-}
-
-//
-// Check local git repo is synced with the remote
-//
-def isGitRepoSynced() {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'status', '-u', 'no', '--porcelain'
-        standardOutput = stdout
-    }
-    //
-    // Exclude gradle.properties
-    //
-    String val = stdout.toString().replaceAll(/.*\/gradle.properties\n/, '')
-    return (0 == val.trim().size())
 }
 
 shadowJar {
-    manifest {
-        attributes(
-                'Implementation-Title': "warp10-warpstudio",
-                'Implementation-Vendor': "Warp 10",
-                'Implementation-Version': getShortVersionName(),
-                'Main-Class': 'io.warp10.warpstudio.Main'
-        )
-        attributes('WarpFleet-Description': 'WarpStudio™ plugin')
-        attributes('WarpFleet-Group': project.ext.group)
-        attributes('WarpFleet-Artifact': project.ext.name)
-        attributes('WarpFleet-Version': project.ext.version)
-    }
-    relocate 'org', 'io.warp10.warpstudio.org'
-    relocate 'jetty', 'io.warp10.warpstudio.jetty'
-    classifier = null
+    // In build/libs the shadowJar is suffixed with the uberjar classifier.
+    archiveClassifier.set('uberjar')
     from('.') {
         include 'README.md'
+        include project.group + '-' + project.name + '.conf'
         include 'wf.json'
-        include 'warp10.conf'
     }
-}
-
-configurations {
-    provided
-}
-
-dependencies {
-    provided 'io.warp10:warpscript:+'
-    compile 'io.warp10:warp10-warpstudio-server:2.0.6' // + project.ext.version
-}
-
-if (project.hasProperty("signing.gnupg.keyName")) {
-    signing {
-        useGpgCmd()
-        sign publishing.publications
+    dependencies {
+        exclude(dependency('org.slf4j::'))
     }
+
+    relocate 'org', 'io.warp10.warpstudio.org'
+    relocate 'jetty', 'io.warp10.warpstudio.jetty'
 }
 
-sourceSets {
-    main {
-        compileClasspath = compileClasspath + configurations.provided
-    }
-}
-
-idea {
-    module {
-        inheritOutputDirs = true
-        scopes.PROVIDED.plus += [configurations.provided]
-    }
+//
+// Remove the ShadowJar from the java component. This avoids publishing the shadowJar
+// when using "from components.java".
+//
+components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements) {
+    skip()
 }
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId project.ext.group
-            artifactId project.ext.name
-            version this.getShortVersionName()
-            artifact(shadowJar)
-            artifact(tasks["javadocJar"])
-            artifact(tasks["sourcesJar"])
+        jar(MavenPublication) {
+            from components.java
+        }
+        uberjar(MavenPublication) {
+            // Publishing the shadowJar is done using the version and not the classifier as
+            // Spark cannot use classifier dependencies.
+            version += '-uberjar'
+            artifact source: shadowJar, classifier: ''
+            artifact sourcesJar
+            artifact javadocJar
+        }
 
+        // Configure all POMs
+        withType(MavenPublication) {
             pom {
-                name = project.ext.name
-                description = 'WarpStudio, the WarpScript editor'
-                url = 'https://warp10.io/'
+                name = project.name
+                description = project.description
+                url = 'https://github.com/senx/' + project.name
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
@@ -174,96 +127,56 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'senx'
-                        name = 'SenX'
+                        name = 'senx'
+                        organization = 'SenX'
+                        organizationUrl = 'https://senx.io'
                         email = 'contact@senx.io'
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com:senx/warp10-plugin-warpstudio.git'
-                    developerConnection = 'scm:git:git://github.com:senx/warp10-plugin-warpstudio.git'
-                    url = 'https://github.com/senx/warp10-plugin-warpstudio.git'
+                    connection = 'scm:git:git://github.com/senx/' + project.name
+                    developerConnection = 'scm:git:ssh://github.com/senx/' + project.name
+                    url = 'https://github.com/senx/' + project.name
                 }
             }
         }
     }
-
     repositories {
-        if (project.hasProperty("ossrhUsername")) {
-            maven {
-                url "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-                credentials {
-                    username ossrhUsername
-                    password ossrhPassword
-                }
-            }
-        }
-        if (project.hasProperty("nexusUsername")) {
-            maven {
-                name "nexus"
-                url "$nexusHost/repository/maven-releases/"
-                credentials {
-                    username nexusUsername
-                    password nexusPassword
-                }
+        maven {
+            name = "Nexus"
+
+            def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
+            def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = nexusUsername
+                password = nexusPassword
             }
         }
     }
 }
 
-if (project.hasProperty("ossrhUsername")) {
-    nexusStaging {
-        packageGroup = "io.warp10"
-        username ossrhUsername
-        password ossrhPassword
-    }
-}
-
-artifacts {
-    archives shadowJar, javadocJar, sourcesJar
-}
-
-
-uploadArchives {
-    if (project.hasProperty("ossrhUsername")) {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-                pom.project {
-                    name project.ext.name
-                    packaging 'jar'
-                    licenses {
-                        license {
-                            name 'The Apache License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    description 'WarpStudio, the WarpScript editor'
-                    url 'https://warp10.io'
-
-                    scm {
-                        url 'https://github.com/senx/warp10-plugin-warpstudio.git'
-                    }
-
-                    developers {
-                        developer {
-                            id 'senx'
-                            name 'SenX'
-                            email 'contact@senx.io'
-                        }
-                    }
-                }
-            }
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = ossrhUsername
+            password = ossrhPassword
         }
     }
 }
 
+signing {
+    useGpgCmd()
+    sign publishing.publications
+}
 
+
+// Avoid dependency warning
+tasks.withType(PublishToMavenRepository) {
+    dependsOn(tasks.findByName('signJarPublication'))
+    dependsOn(tasks.findByName('signUberjarPublication'))
+}
+tasks.withType(PublishToMavenLocal) {
+    dependsOn(tasks.findByName('signJarPublication'))
+    dependsOn(tasks.findByName('signUberjarPublication'))
+}
