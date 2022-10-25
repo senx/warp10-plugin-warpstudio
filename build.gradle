@@ -144,7 +144,6 @@ publishing {
     repositories {
         maven {
             name = "Nexus"
-
             def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
             def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
