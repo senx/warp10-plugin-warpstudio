@@ -134,8 +134,8 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/senx/' + project.name
-                    developerConnection = 'scm:git:ssh://github.com/senx/' + project.name
+                    connection = 'scm:git:git://github.com/senx/' + project.name + '.git'
+                    developerConnection = 'scm:git:ssh://github.com/senx/' + project.name + '.git'
                     url = 'https://github.com/senx/' + project.name
                 }
             }
