@@ -42,7 +42,7 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'io.warp10:warpscript:2.11.1'
-    implementation 'io.warp10:warp10-warpstudio-server:2.0.9'
+    implementation 'io.warp10:warp10-warpstudio-server:2.1.0'
 }
 
 java {
