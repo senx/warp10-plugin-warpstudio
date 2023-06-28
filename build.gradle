@@ -1,5 +1,5 @@
 //
-//   Copyright 2018  SenX S.A.S.
+//   Copyright 2018-2023  SenX S.A.S.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -14,20 +14,29 @@
 //   limitations under the License.
 //
 
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'io.warp10:warpfleet-gradle-plugin:0.0.3'
+    }
+}
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
-    id 'net.nemerosa.versioning' version '2.15.1'
 }
 
+apply plugin: 'io.warp10.warpfleet-gradle-plugin'
 project.group = 'io.warp10'
 project.description = 'WarpStudio, the WarpScript editor'
 
-// If the current tag is set, then it's a new release. Don't add build number
-project.version = versioning.info.lastTag + ((versioning.info.tag != null) ? '' : '-' + versioning.info.build)
+project.version = getVersionFromGit()
 
 // Reproducible Builds
 tasks.withType(AbstractArchiveTask) {
@@ -99,71 +108,72 @@ components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElemen
     skip()
 }
 
-publishing {
-    publications {
-        jar(MavenPublication) {
-            from components.java
-        }
-        uberjar(MavenPublication) {
-            // Publishing the shadowJar is done using the version and not the classifier as
-            // Spark cannot use classifier dependencies.
-            version += '-uberjar'
-            artifact source: shadowJar, classifier: ''
-            artifact sourcesJar
-            artifact javadocJar
-        }
+if (project.hasProperty('ossrhUsername')) {
+    publishing {
+        publications {
+            jar(MavenPublication) {
+                from components.java
+            }
+            uberjar(MavenPublication) {
+                // Publishing the shadowJar is done using the version and not the classifier as
+                // Spark cannot use classifier dependencies.
+                version += '-uberjar'
+                artifact source: shadowJar, classifier: ''
+                artifact sourcesJar
+                artifact javadocJar
+            }
 
-        // Configure all POMs
-        withType(MavenPublication) {
-            pom {
-                name = project.name
-                description = project.description
-                url = 'https://github.com/senx/' + project.name
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        name = 'senx'
-                        organization = 'SenX'
-                        organizationUrl = 'https://senx.io'
-                        email = 'contact@senx.io'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/senx/' + project.name + '.git'
-                    developerConnection = 'scm:git:ssh://github.com/senx/' + project.name + '.git'
+            // Configure all POMs
+            withType(MavenPublication) {
+                pom {
+                    name = project.name
+                    description = project.description
                     url = 'https://github.com/senx/' + project.name
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'senx'
+                            organization = 'SenX'
+                            organizationUrl = 'https://senx.io'
+                            email = 'contact@senx.io'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/senx/' + project.name + '.git'
+                        developerConnection = 'scm:git:ssh://github.com/senx/' + project.name + '.git'
+                        url = 'https://github.com/senx/' + project.name
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "Nexus"
+                def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
+                def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username = nexusUsername
+                    password = nexusPassword
                 }
             }
         }
     }
-    repositories {
-        maven {
-            name = "Nexus"
-            def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
-            def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username = nexusUsername
-                password = nexusPassword
+
+    nexusPublishing {
+        repositories {
+            sonatype {
+                username = ossrhUsername
+                password = ossrhPassword
             }
         }
     }
 }
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            username = ossrhUsername
-            password = ossrhPassword
-        }
-    }
-}
-
 signing {
     useGpgCmd()
     sign publishing.publications
@@ -178,4 +188,20 @@ tasks.withType(PublishToMavenRepository) {
 tasks.withType(PublishToMavenLocal) {
     dependsOn(tasks.findByName('signJarPublication'))
     dependsOn(tasks.findByName('signUberjarPublication'))
+}
+
+
+def getVersionFromGit() {
+    def nogit = System.getProperty("nogit")
+    if (null != nogit) {
+        // Override version with the property value. To remove the version altogether use '-Dnogit' without value.
+        return nogit
+    } else {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--always'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
 }
