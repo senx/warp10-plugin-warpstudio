@@ -109,77 +109,78 @@ components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElemen
   skip()
 }
 
-publishing {
-  publications {
-    jar(MavenPublication) {
-      from components.java
-    }
-    uberjar(MavenPublication) {
-      // Publishing the shadowJar is done using the version and not the classifier as
-      // Spark cannot use classifier dependencies.
-      version += '-uberjar'
-      artifact source: shadowJar, classifier: ''
-      artifact sourcesJar
-      artifact javadocJar
-    }
+if (project.hasProperty('nexusHost')) {
+  publishing {
+    publications {
+      jar(MavenPublication) {
+        from components.java
+      }
+      uberjar(MavenPublication) {
+        // Publishing the shadowJar is done using the version and not the classifier as
+        // Spark cannot use classifier dependencies.
+        version += '-uberjar'
+        artifact source: shadowJar, classifier: ''
+        artifact sourcesJar
+        artifact javadocJar
+      }
 
-    // Configure all POMs
-    withType(MavenPublication) {
-      pom {
-        name = project.name
-        description = project.description
-        url = 'https://github.com/senx/' + project.name
-        licenses {
-          license {
-            name = 'The Apache License, Version 2.0'
-            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-        developers {
-          developer {
-            name = 'senx'
-            organization = 'SenX'
-            organizationUrl = 'https://senx.io'
-            email = 'contact@senx.io'
-          }
-        }
-        scm {
-          connection = 'scm:git:git://github.com/senx/' + project.name + '.git'
-          developerConnection = 'scm:git:ssh://github.com/senx/' + project.name + '.git'
+      // Configure all POMs
+      withType(MavenPublication) {
+        pom {
+          name = project.name
+          description = project.description
           url = 'https://github.com/senx/' + project.name
+          licenses {
+            license {
+              name = 'The Apache License, Version 2.0'
+              url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+          }
+          developers {
+            developer {
+              name = 'senx'
+              organization = 'SenX'
+              organizationUrl = 'https://senx.io'
+              email = 'contact@senx.io'
+            }
+          }
+          scm {
+            connection = 'scm:git:git://github.com/senx/' + project.name + '.git'
+            developerConnection = 'scm:git:ssh://github.com/senx/' + project.name + '.git'
+            url = 'https://github.com/senx/' + project.name
+          }
+        }
+      }
+    }
+    repositories {
+      maven {
+        name = "Nexus"
+        def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
+        def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
+        url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        credentials {
+          username = nexusUsername
+          password = nexusPassword
         }
       }
     }
   }
-  repositories {
-    maven {
-      name = "Nexus"
-      def releasesRepoUrl = nexusHost + '/repository/maven-releases/'
-      def snapshotsRepoUrl = nexusHost + '/repository/maven-snapshots/'
-      url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-      credentials {
-        username = nexusUsername
-        password = nexusPassword
+
+  nexusPublishing {
+    repositories {
+      sonatype {
+        username = ossrhUsername
+        password = ossrhPassword
       }
     }
   }
-}
 
-nexusPublishing {
-  repositories {
-    sonatype {
-      username = ossrhUsername
-      password = ossrhPassword
-    }
+  signing {
+    useGpgCmd()
+    sign publishing.publications
   }
+
 }
-
-signing {
-  useGpgCmd()
-  sign publishing.publications
-}
-
-
 // Avoid dependency warning
 tasks.withType(PublishToMavenRepository) {
   dependsOn(tasks.findByName('signJarPublication'))
