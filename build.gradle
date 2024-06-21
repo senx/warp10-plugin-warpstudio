@@ -29,7 +29,7 @@ plugins {
   id 'maven-publish'
   id 'signing'
   id 'com.github.johnrengelman.shadow' version '8.1.1'
-  id 'io.github.gradle-nexus.publish-plugin' version '2.0.0-rc-1'
+  id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 apply plugin: 'io.warp10.warpfleet-gradle-plugin'
@@ -51,7 +51,7 @@ repositories {
 
 dependencies {
   testImplementation 'junit:junit:4.13.2'
-  compileOnly 'io.warp10:warpscript:3.1.2'
+  compileOnly 'io.warp10:warpscript:3.3.0'
   implementation 'io.warp10:warp10-warpstudio-server:2.1.8'
 }
 
