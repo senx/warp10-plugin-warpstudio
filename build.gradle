@@ -1,5 +1,5 @@
 //
-//   Copyright 2018-2024  SenX S.A.S.
+//   Copyright 2018-2025 SenX S.A.S.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ repositories {
 dependencies {
   testImplementation 'junit:junit:4.13.2'
   compileOnly 'io.warp10:warpscript:3.1.2'
-  implementation 'io.warp10:warp10-warpstudio-server:2.1.9'
+  implementation 'io.warp10:warp10-warpstudio-server:2.1.10'
 }
 
 java {
